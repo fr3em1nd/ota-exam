@@ -1,46 +1,26 @@
-package com.example.ota_exam
-
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.ota_exam.ui.theme.OTAexamTheme
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.ota_exam.R
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            OTAexamTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
-            }
-        }
-    }
-}
+        setContentView(R.layout.activity_main)
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        val recyclerView: RecyclerView = findViewById( R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    OTAexamTheme {
-        Greeting("Android")
+        val json = assets.open("levels.json").bufferedReader().use { it.readText() }
+        val gson = Gson()
+        val levelType = object : TypeToken<LevelResponse>() {}.type
+        val levelResponse: LevelResponse = gson.fromJson(json, levelType)
+
+        val adapter = LevelAdapter(levelResponse.levels)
+        recyclerView.adapter = adapter
     }
 }
